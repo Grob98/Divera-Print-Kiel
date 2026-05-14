@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Entwicklerseite</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static',filename='dist/output.css')}}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{url_for('static',filename='dist/developer.js')}}"></script>
+</head>
+<body>
+<div class="background p-6 h-screen">
+    <h2 class="text-2xl font-bold text-white">Developer</h2>
+    <span class="text-gray-400">Test API connection, generate and print PDF</span>
+    <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <!-- API Test -->
+        <div class="cursor-pointer mx-auto relative flex max-w-sm items-center gap-x-4 rounded-xl p-6 shadow-lg w-full outline outline-black/5 dark:shadow-none dark:-outline-offset-1 dark:outline-white/10">
+            <div class="absolute inset-0 blur-sm grayscale rounded-xl" style="background-color: rgba(255, 255, 255, .1);"></div>
+            <div class="inset-0">
+                <img class="size-12 shrink-0" src="{{url_for('static',filename='img/api_24dp.svg')}}" alt="API Logo" />
+                <div>
+                    <div class="text-xl font-medium text-white">Test API</div>
+                    <p class="text-gray-400">Test the API connection</p>
+                </div>
+            </div>
+        </div>
+        <!-- Generate PDF -->
+        <div id="generate_pdf_button" class="cursor-pointer mx-auto relative flex max-w-sm items-center gap-x-4 rounded-xl p-6 shadow-lg w-full outline outline-black/5 dark:shadow-none dark:-outline-offset-1 dark:outline-white/10">
+            <div class="absolute inset-0 blur-sm grayscale rounded-xl" style="background-color: rgba(255, 255, 255, .1);"></div>
+            <div class="inset-0">
+                <img class="size-12 shrink-0" src="{{url_for('static',filename='img/pdf_24dp.svg')}}" alt="PDF Logo" />
+                <div>
+                    <div class="text-xl font-medium text-white">Generate PDF</div>
+                    <p class="text-gray-400">Generated PDF will be downloaded</p>
+                </div>
+            </div>
+        </div>
+        <!-- Print PDF -->
+        <div id="print_test_button" class="cursor-pointer mx-auto relative flex max-w-sm items-center gap-x-4 rounded-xl p-6 shadow-lg w-full outline outline-black/5 dark:shadow-none dark:-outline-offset-1 dark:outline-white/10">
+            <div class="absolute inset-0 blur-sm grayscale rounded-xl" style="background-color: rgba(255, 255, 255, .1);"></div>
+            <div class="inset-0">
+                <img class="size-12 shrink-0" src="{{url_for('static',filename='img/print_24dp.svg')}}" alt="Print Logo" />
+                <div>
+                    <div class="text-xl font-medium text-white">Print PDF</div>
+                    <p class="text-gray-400">Print the previously generated PDF</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-6">
+        <h3 class="text-lg font-bold text-white mt-6">Result:</h3>
+        <span id="result" class="mt-4 block bg-gray-800 text-white p-4 font-mono rounded-lg whitespace-pre-wrap">No action taken yet.</span>
+    </div>
+</div>
+</body>
+</html>

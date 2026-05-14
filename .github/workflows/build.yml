@@ -11,7 +11,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        os: [windows-latest, ubuntu-latest]
 
     runs-on: ${{ matrix.os }}
 
@@ -29,8 +29,17 @@ jobs:
       - name: Install PyInstaller
         run: pip install pyinstaller
 
+      - name: Generate version.py
+        shell: bash
+        run: |
+          BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          echo "__version__ = '${GITHUB_REF_NAME}'" > src/version.py
+          echo "__build_date__ = '${BUILD_DATE}'" >> src/version.py
+          echo "__commit__ = '${GITHUB_SHA}'" >> src/version.py
+
       - name: Build
-        run: pyinstaller --onefile app/main.py
+        run: pyinstaller --onefile src/main.py
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4

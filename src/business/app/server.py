@@ -69,7 +69,9 @@ def print_test():
 def setup():
     return render_template("setup_page.html", data={
         "operation_info_copies": app_service._get_store().operation_info_copies,
-        "hydrant_map_copies": app_service._get_store().hydrant_info_copies
+        "hydrant_map_copies": app_service._get_store().hydrant_info_copies,
+        "app_name": app_service._get_store().app_info[0],
+        "app_version": app_service._get_store().app_info[1],
     })
 
 @app.route("/setup/pdf_settings", methods=["POST"])

@@ -43,7 +43,7 @@ jobs:
         run: pyinstaller --name="divera-print-kiel" --add-data=templates:templates --add-data=static:static --onedir src/main.py
 
       - name: Copy env example
-        run: copy .env.example dist/divera-print-kiel/.env
+        run: cp .env.example dist/divera-print-kiel/.env
         shell: cmd
 
       - name: Zip build

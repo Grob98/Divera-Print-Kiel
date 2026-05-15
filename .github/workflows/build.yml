@@ -38,12 +38,12 @@ jobs:
           echo "__commit__ = '${GITHUB_SHA}'" >> src/version.py
           echo "__is_package__ = True" >> src/version.py
 
-      - name: Npm install
-        run: npm install
+      - name: Install npm deps
+        run: npm ci
       
       - name: Build Tailwind
         run: |
-          npx tailwindcss -i ./static/src/input.css -o ./static/dist/output.css --minify
+          npx tailwindcss -c tailwind.config.js -i ./static/src/input.css -o ./static/dist/output.css --minify
 
       - name: Build
         run: pyinstaller --name="divera-print-kiel" --add-data=templates:templates --add-data=static:static --onedir src/main.py
@@ -51,10 +51,6 @@ jobs:
       - name: Copy env example
         run: |
           python -c "import shutil; shutil.copy('.env.example', 'dist/divera-print-kiel/.env')"
-
-      - name: Debug dist
-        run: |
-          python -c "from pathlib import Path; import os; [print(p) for p in Path('dist/divera-print-kiel').rglob('*')]"
 
       - name: Zip build
         run: |

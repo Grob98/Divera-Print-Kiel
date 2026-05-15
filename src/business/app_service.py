@@ -59,5 +59,7 @@ class AppService:
     def generate_pdf(self, alarm_data):
         self._pdf_generator.generate_pdf(alarm_data, self)
 
-    def alarm_data_updated(self, alarm_data):
-        pass
+    async def alarm_data_updated(self, alarm_data):
+        await self.get_divera_connector().async_fill_alarm_data(alarm_data)
+        self.generate_pdf(alarm_data)
+        self.get_printer_service().print("output.pdf")

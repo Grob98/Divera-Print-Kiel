@@ -5,6 +5,7 @@ from PIL import Image
 import os
 from typing import TYPE_CHECKING
 import requests
+import traceback
 
 from api.alarm_data import AlarmData, real2_example_alarm_data
 from version import __is_package__
@@ -41,7 +42,7 @@ async def generate_pdf():
         app_service.generate_pdf(alarm_data)
         return "PDF generation successfull.", 200
     except Exception as e:
-        return f"Error occurred while generating PDF: {str(e)}", 500
+        return f"Error occurred while generating PDF: {str(e)} - Stacktrace: {traceback.format_exc()}", 500
     pass
 
 @app.route("/developer/download_pdf", methods=["POST"])

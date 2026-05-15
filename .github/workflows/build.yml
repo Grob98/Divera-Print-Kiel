@@ -37,9 +37,18 @@ jobs:
           echo "__version__ = '${GITHUB_REF_NAME}'" > src/version.py
           echo "__build_date__ = '${BUILD_DATE}'" >> src/version.py
           echo "__commit__ = '${GITHUB_SHA}'" >> src/version.py
+          echo "__is_package__ = True" >> src/version.py
 
       - name: Build
-        run: pyinstaller --onedir src/main.py
+        run: pyinstaller --name="divera-print-kiel" --add-data=templates:templates --add-data=static:static --onedir src/main.py
+
+      - name: Copy env example
+        run: copy .env.example dist/divera-print-kiel/.env
+        shell: cmd
+
+      - name: Zip build
+        run: |
+          powershell Compress-Archive -Path dist/divera-print-kiel/* -DestinationPath dist/divera-print-kiel.zip
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4

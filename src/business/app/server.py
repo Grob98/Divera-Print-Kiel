@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 import requests
 
 from api.alarm_data import AlarmData, real2_example_alarm_data
+from version import __is_package__
 
 if TYPE_CHECKING:
     from business.app_service import AppService
@@ -90,10 +91,17 @@ def save_pdf_settings():
 
 def run_server(path, app_service_instance: AppService):
     print(f"Running server with path: {path}")
+    if __is_package__:
+        path = os.path.join(path, "__internal")
+
+
     app.template_folder = os.path.join(path, 'templates')
     app.static_folder = os.path.join(path, 'static')
 
     global app_service
     app_service = app_service_instance
 
-    app.run(debug=True, port=int(os.environ.get('APP_PORT', 80)))    
+    if __is_package__:
+        app.run(host="0.0.0.0", debug=False, port=int(os.environ.get('APP_PORT', 80)))   
+    else:
+        app.run(debug=True, port=int(os.environ.get('APP_PORT', 80))) 

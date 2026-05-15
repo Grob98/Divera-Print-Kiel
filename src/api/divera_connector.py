@@ -1,3 +1,5 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
 import asyncio
 import logging
 import ssl
@@ -7,6 +9,8 @@ from datetime import timedelta
 
 import aiohttp
 
+if TYPE_CHECKING:
+    from business.app_service import AppService
 from api.alarm_data import AlarmData
 
 from .const import (
@@ -25,7 +29,7 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 class DiveraConnector():
-    def __init__(self) -> None:
+    def __init__(self, app_service: AppService) -> None:
         self.access_key: str = os.getenv(CONF_ACCESS_KEY)
         self.ucr_id: str | None = None
         self._jwt: str | None = None
@@ -34,6 +38,12 @@ class DiveraConnector():
         self._ws_connected: bool = False
         self.update_interval: timedelta | None = timedelta(seconds=FALLBACK_POLL_INTERVAL)
         self._sslContext = ssl.create_default_context(cafile=certifi.where())
+        self._app_service = app_service
+
+    async def start(self):
+        await asyncio.sleep(10) # wait a bit for the server to start
+        _LOGGER.info("Starting DiveraConnector polling loop")
+        await self.start_polling()
 
     # ------------------------------------------------------------------
     # Polling
@@ -42,7 +52,7 @@ class DiveraConnector():
     async def start_polling(self) -> None:
         """Starts the polling loop."""
         if self._poll_task and not self._poll_task.done():
-            return  # läuft bereits
+            return # already running
         self._poll_task = asyncio.create_task(self._poll_loop())
 
     async def stop_polling(self) -> None:
@@ -52,7 +62,7 @@ class DiveraConnector():
             try:
                 await self._poll_task
             except asyncio.CancelledError:
-                pass  # erwartet
+                pass  # expected when cancelling
         self._poll_task = None
 
     async def _poll_loop(self) -> None:
@@ -63,8 +73,7 @@ class DiveraConnector():
                 else:
                     # Poll only if WebSocket is not connected
                     _LOGGER.debug("DIVERA: Polling loop tick – fetching alarm data via REST")
-                    alarmData = await self._async_update_alarm_data()                 
-                    print("Aktueller Alarm:", alarmData)
+                    await self._async_update_alarm_data()                 
                     _LOGGER.debug("DIVERA: Polling loop successfully fetched alarm data - trying to switch to WebSocket if not connected")
                     await self._async_start_websocket()
             except ConfigEntryAuthFailed as auth_err:
@@ -282,7 +291,7 @@ class DiveraConnector():
     async def _async_update_alarm_data(self):
         """Fetch current alarm data via REST."""
         payload = await self._async_rest_client(BASE_PULL_URL)
-        return self._extract_alarm(payload)
+        alarm = self._extract_alarm(payload)
 
     def _extract_alarm(self, payload: dict):
         """Fetch the most recent active alarm from the API response."""

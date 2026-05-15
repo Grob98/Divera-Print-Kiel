@@ -3,15 +3,17 @@ from business.app_state import AppStore
 from business.pdf.pdf_generator import PDFGenerator
 from business.printer.doc_printer import PrinterService
 import business.app.server
-import business.pdf.pdf_generator
+from business.app_updater import AppUpdater
 
+import asyncio
+import os
 import threading
 
 class AppService:
     def __init__(self, global_path: str):
         self._pdf_generator = PDFGenerator(global_path)
         self._printer_service = PrinterService(global_path)
-        self._connector = DiveraConnector()
+        self._connector = DiveraConnector(self)
         self._store = AppStore()
         self._global_path = global_path
 
@@ -22,19 +24,31 @@ class AppService:
         return self._connector
     
     def _start_api_job(self):
-        #await connector.start_polling()
         pass
+        #asyncio.run(self._connector.start())
 
     def _get_store(self) -> AppStore:
         return self._store
 
     def _run_api_connector(self):
-        thread = threading.Thread(target=self._start_api_job)
+        #detect if flask reloaded the process and only start connector if not already started
+        if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+            print("API connector already started, skipping.")
+            return
+        
+        print("Starting API connector...")
+        thread = threading.Thread(target=self._start_api_job, name="APIConnectorThread")
         thread.daemon = True
         thread.start()
-        pass
+
+    def _run_updater(self):
+        app_updater = AppUpdater()
+        thread = threading.Thread(target=app_updater.start_updater, name="AppUpdaterThread")
+        thread.daemon = True
+        thread.start()
     
     def start(self):
+        self._run_updater()
         self._run_api_connector()
         business.app.server.run_server(self._global_path, self)
         pass
@@ -44,3 +58,6 @@ class AppService:
     # ------------------------------------------------------------------
     def generate_pdf(self, alarm_data):
         self._pdf_generator.generate_pdf(alarm_data, self)
+
+    def alarm_data_updated(self, alarm_data):
+        pass

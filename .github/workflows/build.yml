@@ -39,7 +39,7 @@ jobs:
           echo "__commit__ = '${GITHUB_SHA}'" >> src/version.py
 
       - name: Build
-        run: pyinstaller --onefile src/main.py
+        run: pyinstaller --onedir src/main.py
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4

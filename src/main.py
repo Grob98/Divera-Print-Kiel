@@ -7,7 +7,7 @@ from api.divera_connector import DiveraConnector
 import business.app_service
 
 def setup_logging():
-  logging.basicConfig(filename='myapp.log', level=logging.DEBUG)
+  logging.basicConfig(filename='app.log', level=logging.DEBUG)
   consoleHandler = logging.StreamHandler()
   consoleHandler.setLevel(logging.DEBUG)
   formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -31,5 +31,6 @@ async def main():
 
 if __name__ == "__main__":
   setup_logging()
+  logging.info("Starting application...")
 
   asyncio.run(main())

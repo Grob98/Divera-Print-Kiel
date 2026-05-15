@@ -48,7 +48,7 @@ jobs:
 
       - name: Zip build
         run: |
-          powershell Compress-Archive -Path dist/divera-print-kiel/* -DestinationPath dist/divera-print-kiel.zip
+          python -c "import shutil; shutil.make_archive('dist/divera-print-kiel', 'zip', 'dist/divera-print-kiel')"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4

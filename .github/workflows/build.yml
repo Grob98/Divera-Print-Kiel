@@ -43,8 +43,8 @@ jobs:
         run: pyinstaller --name="divera-print-kiel" --add-data=templates:templates --add-data=static:static --onedir src/main.py
 
       - name: Copy env example
-        run: cp .env.example dist/divera-print-kiel/.env
-        shell: cmd
+        run: |
+          python -c "import shutil; shutil.copy('.env.example', 'dist/divera-print-kiel/.env')"
 
       - name: Zip build
         run: |

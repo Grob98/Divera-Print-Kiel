@@ -16,7 +16,6 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
@@ -39,6 +38,13 @@ jobs:
           echo "__commit__ = '${GITHUB_SHA}'" >> src/version.py
           echo "__is_package__ = True" >> src/version.py
 
+      - name: Npm install
+        run: npm install
+      
+      - name: Build Tailwind
+        run: |
+          npx tailwindcss -i ./static/src/input.css -o ./static/dist/output.css --minify
+
       - name: Build
         run: pyinstaller --name="divera-print-kiel" --add-data=templates:templates --add-data=static:static --onedir src/main.py
 
@@ -46,9 +52,13 @@ jobs:
         run: |
           python -c "import shutil; shutil.copy('.env.example', 'dist/divera-print-kiel/.env')"
 
+      - name: Debug dist
+        run: |
+          python -c "from pathlib import Path; import os; [print(p) for p in Path('dist/divera-print-kiel').rglob('*')]"
+
       - name: Zip build
         run: |
-          python -c "import shutil; shutil.make_archive('dist/divera-print-kiel', 'zip', 'dist/divera-print-kiel')"
+          python -c "import shutil; shutil.make_archive('dist/divera-print-kiel-${{ matrix.os }}', 'zip', 'dist/divera-print-kiel')"
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4

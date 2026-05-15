@@ -26,7 +26,7 @@ class AppUpdater:
             url = "https://api.github.com/repos/Grob98/Divera-Print-Kiel/releases/latest"
             response = requests.get(url).json()
 
-            latest = response["tag_name"].replace("v", "")
+            latest = response["tag_name"]
 
             if latest != __version__:
                 _LOGGER.info("Update available: %s (current: %s)", latest, __version__)

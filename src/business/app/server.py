@@ -92,7 +92,7 @@ def save_pdf_settings():
 def run_server(path, app_service_instance: AppService):
     print(f"Running server with path: {path}")
     if __is_package__:
-        path = os.path.join(path, "__internal")
+        path = os.path.join(path, "_internal")
 
 
     app.template_folder = os.path.join(path, 'templates')

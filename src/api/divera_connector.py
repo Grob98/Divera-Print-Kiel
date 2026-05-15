@@ -1,4 +1,5 @@
 from __future__ import annotations
+import traceback
 from typing import TYPE_CHECKING
 import asyncio
 import logging
@@ -44,6 +45,8 @@ class DiveraConnector():
         await asyncio.sleep(10) # wait a bit for the server to start
         _LOGGER.info("Starting DiveraConnector polling loop")
         await self.start_polling()
+        stop_event = asyncio.Event()
+        await stop_event.wait()
 
     # ------------------------------------------------------------------
     # Polling
@@ -82,6 +85,7 @@ class DiveraConnector():
                 return
             except Exception as err:
                 _LOGGER.warning("Polling error: %s", err)
+                _LOGGER.debug(traceback.format_exc())
             _LOGGER.debug("DIVERA: Polling loop sleeping for %d seconds", self.update_interval.total_seconds())
             await asyncio.sleep(self.update_interval.total_seconds())
 
@@ -176,6 +180,7 @@ class DiveraConnector():
                     type(err).__name__,
                     delay,
                 )
+                _LOGGER.debug(traceback.format_exc())
                 await asyncio.sleep(delay)
                 delay = min(delay * 2, WS_MAX_RECONNECT_DELAY)
                 continue
@@ -257,7 +262,8 @@ class DiveraConnector():
             _LOGGER.debug("DIVERA: User status update received: %s", data.get("payload"))
 
         else:
-            _LOGGER.debug("DIVERA: Unknown WS event '%s': %s", msg_type, data)
+            #_LOGGER.debug("DIVERA: Unknown WS event '%s': %s", msg_type, data)
+            _LOGGER.debug("DIVERA: Unknown WS event '%s'", msg_type)
 
     # ------------------------------------------------------------------
     # REST Client
@@ -292,7 +298,8 @@ class DiveraConnector():
         """Fetch current alarm data via REST."""
         payload = await self._async_rest_client(BASE_PULL_URL)
         alarm = self._extract_alarm(payload)
-        await self._app_service.alarm_data_updated(alarm)
+        if alarm:
+            await self._app_service.alarm_data_updated(alarm)
 
     def _extract_alarm(self, payload: dict):
         """Fetch the most recent active alarm from the API response."""
@@ -303,11 +310,6 @@ class DiveraConnector():
             return None
 
         alarms = list(items.values())
-        _LOGGER.debug("DIVERA: found %d alarm(s)", len(alarms))
-
-        if len(alarms) > 0:
-            print("AlarmData:", alarms[0])
-
         return max(alarms, key=lambda a: a.get("id", 0))
 
     async def _async_update_vehicle_data(self):
@@ -322,9 +324,6 @@ class DiveraConnector():
         """Fill the AlarmData object with data from the API."""
         vehicle_data = await self._async_update_vehicle_data()
         alarm_data.add_api_data(vehicle_data)
-        
-        
-
 
 class UpdateFailed(Exception):
     """Exception raised when an update fails."""

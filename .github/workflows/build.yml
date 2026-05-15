@@ -7,11 +7,10 @@ on:
   workflow_dispatch:
 
 jobs:
-
   build:
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os: [windows-latest, ubuntu-24.04-arm]
 
     runs-on: ${{ matrix.os }}
 

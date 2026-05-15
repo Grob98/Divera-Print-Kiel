@@ -14,7 +14,6 @@ class PDFGenerator:
         #Update only on reload
         self._tmp_dir = os.path.join(global_path, "tmp")
         self._app_port = int(os.environ.get('APP_PORT', 80))
-        self._ignore_operations = []
         pass
 
     def generate_pdf(self, alarm_data: AlarmData, app_service: AppService):

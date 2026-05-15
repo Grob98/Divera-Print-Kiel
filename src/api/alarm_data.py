@@ -38,6 +38,9 @@ class AlarmData:
   def get(self, key, default=None):
     return self.rawData.get(key, default)
   
+  def is_closed(self) -> bool:
+    return self.get("closed", True) or self.get("deleted", True)
+  
   def get_formatted_creation_date(self) -> str:
     timestamp = self.get("ts_create", 0)
     tz = pytz.timezone('Europe/Berlin')

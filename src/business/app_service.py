@@ -75,4 +75,4 @@ class AppService:
         self._store.set_ignore_operation(alarm_data.get_operation_no())
         await self.get_divera_connector().async_fill_alarm_data(alarm_data)
         self.generate_pdf(alarm_data)
-        self.get_printer_service().print("output.pdf")
+        self.get_printer_service().print()

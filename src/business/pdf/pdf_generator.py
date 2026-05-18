@@ -17,9 +17,6 @@ class PDFGenerator:
         pass
 
     def generate_pdf(self, alarm_data: AlarmData, app_service: AppService):
-        if (alarm_data.get_operation_no() in self._ignore_operations):
-            print(f"Skipping PDF generation for operation {alarm_data.get_operation_no()} as it is in the ignore list.")
-            return
         self._alarm_data = alarm_data
         
         print("Starting PDF generation...")

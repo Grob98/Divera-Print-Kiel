@@ -299,7 +299,7 @@ class DiveraConnector():
         payload = await self._async_rest_client(BASE_PULL_URL)
         alarm = self._extract_alarm(payload)
         if alarm:
-            await self._app_service.alarm_data_updated(alarm)
+            await self._app_service.alarm_data_updated(AlarmData(alarm))
 
     def _extract_alarm(self, payload: dict):
         """Fetch the most recent active alarm from the API response."""
